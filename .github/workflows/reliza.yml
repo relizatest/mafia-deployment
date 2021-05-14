@@ -43,7 +43,7 @@ jobs:
             # git commit and update
             git config --global user.name 'reliza-auto'
             git config --global user.email 'info@reliza.io'
-            git add .
+            git add helm/Chart.yaml
             git commit -m "chore: bump mafia helm chart version to $vvar"
             git push
             commit_sha=$(git log -1 --pretty='%H')
