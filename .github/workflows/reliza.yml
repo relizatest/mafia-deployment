@@ -17,15 +17,20 @@ jobs:
           docker pull relizaio/reliza-cli
           
           # get latest completed release to see if there are diffs in helm chart
-          rlzclientout=$(docker run --rm relizaio/reliza-cli getlatestrelease -k ${{ secrets.RELIZA_API_KEY }} -i ${{ secrets.RELIZA_API_ID }} -b $GITHUB_REF)
           do_helm_release="true"
-          if [ ! -z "$rlzclientout" ]
+          last_commit=$(docker run --rm relizaio/reliza-cli getlatestrelease -i ${{ secrets.RELIZA_API_ID }} -k ${{ secrets.RELIZA_API_KEY }} \
+            --branch $GITHUB_REF | jq -r ".sourceCodeEntryDetails.commit")
+          if [ ! -z "$last_commit" ]
           then
-            # check git history to check whether to do release
-            echo "release present"
-            echo $rlzclientout | jq
-            do_helm_release="false"
+            # check if there were changes on helm chart since last release
+            changes=$(git log $last_commit..$GITHUB_SHA helm/ | wc -l)
+            if [ $changes -eq 0 ]; then do_helm_release="false"; else commit_list=$(git log $last_commit..$GITHUB_SHA --date=iso-strict --pretty='%H|||%ad|||%s' | base64 -w 0); fi
+          else
+            commit_list=$(git log -1 --date=iso-strict --pretty='%H|||%ad|||%s' | base64 -w 0)
           fi
+          
+          echo "do helm release = $do_helm_release"
+          echo "commits = $commit_list"
           
           if [ "true" == "$do_helm_release" ]
           then
@@ -47,7 +52,7 @@ jobs:
             sha_digest=$(docker run --rm -v $(pwd)/helm:/apps/helm --entrypoint /bin/sh relizaio/helmpush -c "helm package helm/ > /dev/null && sha256sum *.tgz | cut -f 1 -d ' '")
             
             # submit build data to Reliza Hub
-            docker run --rm relizaio/reliza-cli addrelease -b $GITHUB_REF --commit $GITHUB_SHA -v $vvar \
+            docker run --rm relizaio/reliza-cli addrelease -b $GITHUB_REF --commits $commit_list -v $vvar \
               -i ${{ secrets.RELIZA_API_ID }} -k ${{ secrets.RELIZA_API_KEY }} --artid ${{ secrets.HELM_CHART_REPO }}mafia \
               --artbuildid github$GITHUB_ACTION$GITHUB_SHA --artcimeta GitHub Actions --arttype File --artdigests sha256:$sha_digest
           fi
