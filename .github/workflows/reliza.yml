@@ -41,9 +41,7 @@ jobs:
             # git commit and update - TODO
             
             # publish helm chart on Reliza Hub registry
-            echo -n "docker run --rm -v $(pwd)/helm:/apps/helm relizaio/helmpush push /apps/helm ${{ secrets.HELM_CHART_REPO }} -u '${{ secrets.HELM_PUSH_LOGIN }}' -p '${{ secrets.HELM_PUSH_TOKEN }}'" > helm_push_command
-            cat helm_push_command
-            eval helm_push_command
+            docker run --rm -v $(pwd)/helm:/apps/helm relizaio/helmpush push /apps/helm ${{ secrets.HELM_CHART_REPO }} -u '${{ secrets.HELM_PUSH_LOGIN }}' -p '${{ secrets.HELM_PUSH_TOKEN }}'
             
           fi
 
