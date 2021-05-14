@@ -24,13 +24,10 @@ jobs:
           then
             # check if there were changes on helm chart since last release
             changes=$(git log $last_commit..$GITHUB_SHA helm/ | wc -l)
-            if [ $changes -eq 0 ]; then do_helm_release="false"; else commit_list=$(git log $last_commit..$GITHUB_SHA --date=iso-strict --pretty='%H|||%ad|||%s' | base64 -w 0); fi
-          else
-            commit_list=$(git log -1 --date=iso-strict --pretty='%H|||%ad|||%s' | base64 -w 0)
+            if [ $changes -eq 0 ]; then do_helm_release="false"; fi
           fi
           
           echo "do helm release = $do_helm_release"
-          echo "commits = $commit_list"
           
           if [ "true" == "$do_helm_release" ]
           then
@@ -43,7 +40,21 @@ jobs:
             # update version on the chart
             sed -i "/version: /s/.*/version: $vvar/" helm/Chart.yaml
             
-            # git commit and update - TODO
+            # git commit and update
+            git config --global user.name 'reliza-auto'
+            git config --global user.email 'info@reliza.io'
+            git add .
+            git commit -m "chore: bump mafia helm chart version to $vvar"
+            git push
+            commit_sha=$(git log -1 --pretty='%H')
+            
+            if [ ! -z "$last_commit" ]
+            then
+              commit_list=$(git log $last_commit..$commit_sha --date=iso-strict --pretty='%H|||%ad|||%s' | base64 -w 0)
+            else
+              commit_list=$(git log -2 --date=iso-strict --pretty='%H|||%ad|||%s' | base64 -w 0)
+            fi
+              
             
             # publish helm chart on Reliza Hub registry
             docker run --rm -v $(pwd)/helm:/apps/helm relizaio/helmpush push /apps/helm ${{ secrets.HELM_CHART_REPO }} -u '${{ secrets.HELM_PUSH_LOGIN }}' -p '${{ secrets.HELM_PUSH_TOKEN }}'
