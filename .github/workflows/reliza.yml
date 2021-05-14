@@ -48,7 +48,7 @@ jobs:
             
             # submit build data to Reliza Hub
             docker run --rm relizaio/reliza-cli addrelease -b $GITHUB_REF --commit $GITHUB_SHA -v $vvar \
-              -i ${{ secrets.RELIZA_API_ID }} -k ${{ secrets.RELIZA_API_KEY }} --artid ${{ secrets.HELM_CHART_REPO }}/mafia \
+              -i ${{ secrets.RELIZA_API_ID }} -k ${{ secrets.RELIZA_API_KEY }} --artid ${{ secrets.HELM_CHART_REPO }}mafia \
               --artbuildid github$GITHUB_ACTION$GITHUB_SHA --artcimeta GitHub Actions --arttype File --artdigests sha256:$sha_digest
           fi
 
