@@ -14,11 +14,17 @@ jobs:
           fetch-depth: 50
       - name: Obtain version and stream version to Reliza Hub
         run: |
-          # get version
           docker pull relizaio/reliza-cli
-          docker run --rm relizaio/reliza-cli getversion -k ${{ secrets.RELIZA_API_KEY }} -i ${{ secrets.RELIZA_API_ID }} -b $GITHUB_REF > full_version_output 2>&1
-          cat full_version_output | jq -r ".version" > version
-          vvar=$(cat version)
+          
+          # get latest completed release to see if there are diffs in helm chart
+          rlzclientout=$(docker run --rm relizaio/reliza-cli getlatestrelease -k ${{ secrets.RELIZA_API_KEY }} -i ${{ secrets.RELIZA_API_ID }} -b $GITHUB_REF)
+          echo $rlzclientout | jq
+          
+          # get version
+          
+          # docker run --rm relizaio/reliza-cli getversion -k ${{ secrets.RELIZA_API_KEY }} -i ${{ secrets.RELIZA_API_ID }} -b $GITHUB_REF > full_version_output 2>&1
+          # cat full_version_output | jq -r ".version" > version
+          # vvar=$(cat version)
           # update version on the chart
-          sed -i "/version: /s/.*/version: $vvar/" helm/Chart.yaml
-          cat helm/Chart.yaml
+          # sed -i "/version: /s/.*/version: $vvar/" helm/Chart.yaml
+          # cat helm/Chart.yaml
