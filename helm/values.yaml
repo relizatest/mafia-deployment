@@ -1,10 +1,10 @@
 backend:
-  image: taleodor/mafia-express:latest
+  image: registry.relizahub.com/03255341-9390-49e6-98fc-98978b67f799-public/mafia-express@sha256:ab49b50a524d92263dc8bda0f529fccae5e48f717b9e5a60929ef3144b870f21
   replicaCount: 1
   port: 3000
   targetPort: 3000
 ui:
-  image: taleodor/mafia-vue:latest
+  image: registry.relizahub.com/03255341-9390-49e6-98fc-98978b67f799-public/mafia-vue@sha256:afeefe258b74b063608b5bcabe6ed18d7c4f4f7bb22988781f93f7d2dd0aa447
   replicaCount: 1
   port: 80
   targetPort: 80
