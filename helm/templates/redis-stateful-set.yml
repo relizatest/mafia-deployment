@@ -19,7 +19,7 @@ spec:
         fsGroup: 999
       containers:
         - name: redis-container
-          image: redis:5.0.8-buster
+          image: {{ .Values.redis.image }}
           command: ["redis-server", "--bind", "0.0.0.0"]
           ports:
           - containerPort: 6379

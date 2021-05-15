@@ -8,6 +8,8 @@ ui:
   replicaCount: 1
   port: 80
   targetPort: 80
+redis:
+  image: docker.io/library/redis:6.2.3-buster
 ingress:
   nginxEnabled: false
   traefikEnabled: false
