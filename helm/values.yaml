@@ -11,6 +11,7 @@ ui:
 redis:
   image: docker.io/library/redis:6.2.3-buster
 ingress:
+  minimalIngressEnabled: true
   nginxEnabled: false
   traefikEnabled: false
-  host: mafia.brolia.com
+  host: localhost

@@ -1,0 +1,18 @@
+{{- if .Values.ingress.minimalIngressEnabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mafia-ingress
+  namespace: {{ .Release.Namespace }}
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: mafia-ui-service
+            port:
+              number: 80
+{{- end }}
