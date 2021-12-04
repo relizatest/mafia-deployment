@@ -57,7 +57,7 @@ jobs:
               
             
             # publish helm chart on Reliza Hub registry
-            docker run --rm -v $(pwd)/helm:/apps/helm relizaio/helmpush push /apps/helm ${{ secrets.HELM_CHART_REPO }} -u '${{ secrets.HELM_PUSH_LOGIN }}' -p '${{ secrets.HELM_PUSH_TOKEN }}'
+            docker run --rm -v $(pwd)/helm:/apps/helm relizaio/helmpush cm-push /apps/helm ${{ secrets.HELM_CHART_REPO }} -u '${{ secrets.HELM_PUSH_LOGIN }}' -p '${{ secrets.HELM_PUSH_TOKEN }}'
             
             # download and compute sha256 digest for helm chart package tgz
             docker run --rm -v $(pwd)/helm:/apps/helm --entrypoint /bin/sh relizaio/helmpush -c "helm repo add repo ${{ secrets.HELM_CHART_REPO }} --username '${{ secrets.HELM_PUSH_LOGIN }}' --password '${{ secrets.HELM_PUSH_TOKEN }}' && helm pull repo/mafia -d /apps/helm/"
